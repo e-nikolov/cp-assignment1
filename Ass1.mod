@@ -42,12 +42,19 @@ minimize
   testexpr;
 subject to {
 	//This assures that no actor plays two charachters in the same scene.
+	//1 scene -> an actor only plays 1 char
 	forall(s in Scenes, char1 in s.characters, char2 in s.characters: char1 != char2)
 		assign[<char1>] != assign[<char2>]; 
 	  
-//	Characters["asdf"].name != Characters["ad"].name;
+//1 character can only be played by 1 actor
 
+//actor can play a character if they have the same type
 
+//1 leading character -> 1 actor
+
+//1 actor cannot play 2 different characters in 2 consecutive scenes / can only play the same character in 2 consecutive scenes
+
+//1 actor cannot play more than MAX number of chars
 
  	testvar > 10; 
 }
