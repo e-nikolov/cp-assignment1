@@ -57,5 +57,3 @@ execute {
 	for(var name in CharacterNames)
    		writeln(name);
 }
- 
->>>>>>> 96d70d044cddccd8d9bb25bd32d690e033588b9d
