@@ -9,12 +9,12 @@ using CP;
 {string} CharacterTypes = ...;
 
 tuple Character {
-	string name;
+	key string name;
 	string characterType; 
 }
 
 tuple Scene {
-	string name;
+	key string name;
 	{string} characters;
 }  
 
@@ -24,6 +24,10 @@ tuple Scene {
 int maxNrOfCharacters = ...;
 
 {Scene} Scenes = ...;
+
+range actorRange = 1..card(Characters);
+dvar int Actors[actorRange] in 0..1;
+dvar int assign[Characters] in actorRange;
 
 dvar int testvar in 1..1000;
 
