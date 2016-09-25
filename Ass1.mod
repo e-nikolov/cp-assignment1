@@ -20,11 +20,16 @@ tuple Scene {
 
 {Character} Characters with characterType in CharacterTypes = ...;
 
+{string} CharacterNames = union(char in Characters) {char.name};
+
 {string} LeadingCharacters = ...;
 int maxNrOfCharacters = ...;
 
 {Scene} Scenes = ...;
 
+assert forall (scene in Scenes, name in scene.characters) test:
+	name in CharacterNames;
+	
 range actorRange = 1..card(Characters);
 dvar int Actors[actorRange] in 0..1;
 dvar int assign[Characters] in actorRange;
@@ -36,8 +41,21 @@ dexpr int testexpr = testvar*2;
 minimize
   testexpr;
 subject to {
+	//This assures that no actor plays two charachters in the same scene.
 	forall(s in Scenes, char1 in s.characters, char2 in s.characters: char1 != char2)
 		assign[<char1>] != assign[<char2>]; 
 	  
-	testvar > 10; 
+//	Characters["asdf"].name != Characters["ad"].name;
+
+
+
+ 	testvar > 10; 
 }
+
+
+execute {
+	for(var name in CharacterNames)
+   		writeln(name);
+}
+ 
+>>>>>>> 96d70d044cddccd8d9bb25bd32d690e033588b9d
