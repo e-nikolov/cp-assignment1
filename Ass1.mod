@@ -36,8 +36,8 @@ dexpr int testexpr = testvar*2;
 minimize
   testexpr;
 subject to {
-
-
- 	testvar > 10; 
+	forall(s in Scenes, char1 in s.characters, char2 in s.characters: char1 != char2)
+		assign[<char1>] != assign[<char2>]; 
+	  
+	testvar > 10; 
 }
- 
