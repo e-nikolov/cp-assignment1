@@ -9,7 +9,7 @@ using CP;
 {string} CharacterTypes = ...;
 
 tuple Character {
-	string name;
+	key string name;
 	string characterType; 
 }
 
@@ -20,7 +20,6 @@ tuple Scene {
 
 {Character} Characters with characterType in CharacterTypes = ...;
 
-//{string} CharacterNames = all(c in 1..nCharacters) Characters[c];
 {string} CharacterNames = union(char in Characters) {char.name};
 
 {string} LeadingCharacters = ...;
@@ -31,8 +30,9 @@ int maxNrOfCharacters = ...;
 assert forall (scene in Scenes, name in scene.characters) test:
 	name in CharacterNames;
 	
-//	character in Characters;
-	
+range actorRange = 1..card(Characters);
+dvar int Actors[actorRange] in 0..1;
+dvar int assign[Characters] in actorRange;
 
 dvar int testvar in 1..1000;
 
