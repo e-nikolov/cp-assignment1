@@ -54,6 +54,9 @@ subject to {
 
 
 execute {
-	for(var name in CharacterNames)
-   		writeln(name);
+//  both methods are not working yet..
+//	for(var name in CharacterNames)
+//   		writeln("actor", Opl.item(assign, <name>), " plays ", name);
+//	for(var i in actorRange)
+//   		writeln("actor", i, " plays ", Opl.item(CharacterNames, 10));
 }
