@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ASCII"?><project>
+	<version>1.0</version>
+	<configs>
+		<config category="opl" default="true" name="SmallPlay">
+			<ref name="Ass1.mod" type="model">
+			</ref>
+			<ref name="Ass1.ops" type="setting">
+			</ref>
+			<ref name="SmallPlay.dat" type="data">
+			</ref>
+		</config>
+	</configs>
+	
+</project>
