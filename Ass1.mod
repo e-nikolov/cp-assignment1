@@ -63,6 +63,7 @@ subject to {
 //1 actor cannot play 2 different characters in 2 consecutive scenes / can only play the same character in 2 consecutive scenes
 
 //1 actor cannot play more than MAX number of chars
+	forall(a in actorRange) count(actorOfCharacter, a) <= maxNrOfCharacters;
 }
 
 execute {
