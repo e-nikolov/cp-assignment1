@@ -9,6 +9,22 @@
 			<ref name="SmallPlay.dat" type="data">
 			</ref>
 		</config>
+		<config category="opl" default="false" name="3Types">
+			<ref name="Ass1.mod" type="model">
+			</ref>
+			<ref name="Ass1.ops" type="setting">
+			</ref>
+			<ref name="3TypesTwice.dat" type="data">
+			</ref>
+		</config>
+		<config category="opl" default="false" name="Actual">
+			<ref name="Ass1.mod" type="model">
+			</ref>
+			<ref name="Ass1.ops" type="setting">
+			</ref>
+			<ref name="ActualMax4.dat" type="data">
+			</ref>
+		</config>
 	</configs>
 	
 </project>
