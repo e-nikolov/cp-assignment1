@@ -27,6 +27,7 @@ tuple Scene {
 int maxNrOfCharacters = ...;
 
 {Scene} Scenes = ...;
+int nrOfScenes = card(Scenes);
 
 assert forall (scene in Scenes, name in scene.characters) test:
 	name in CharacterNames;
@@ -62,6 +63,15 @@ subject to {
 	  actorOfCharacter[<lc>] != actorOfCharacter[<c.name>];
 //1 actor cannot play 2 different characters in 2 consecutive scenes / can only play the same character in 2 consecutive scenes
 
+	// for each scene
+	
+	// for each character in the scene * for each character in scene before that, if characters are different -> different actors
+	
+	forall (s2 in 1..nrOfScenes-1)
+//	  	allDifferent(all(s1 in Slots : s <= s1 <= s+blocksize-1) cartype[s1]);
+//		allDifferent(all(s in s2-1..s2, ch in item(Scenes, s).characters) actorOfCharacter[<ch>]);
+		forall(ch2 in item(Scenes, s2).characters, ch1 in item(Scenes, s2 - 1).characters : ch1 != ch2)	
+			actorOfCharacter[<ch1>] != actorOfCharacter[<ch2>];
 //1 actor cannot play more than MAX number of chars
 	forall(a in actorRange) count(actorOfCharacter, a) <= maxNrOfCharacters;
 }
