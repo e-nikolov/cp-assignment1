@@ -32,10 +32,10 @@ assert forall (scene in Scenes, name in scene.characters) test:
 	name in CharacterNames;
 	
 range actorRange = 1..card(Characters);
-dvar int ActorTypes[actorRange] in 0..nrOfCharacterTypes;
-dvar int assign[c in Characters] in actorRange;
+dvar int typeOfActor[actorRange] in 0..nrOfCharacterTypes;
+dvar int actorOfCharacter[c in Characters] in actorRange;
 
-dexpr int NrOfActorsNeeded = max(c in Characters) assign[c];;
+dexpr int NrOfActorsNeeded = max(c in Characters) actorOfCharacter[c];;
  
 execute {
 	cp.param.Workers = 1;
@@ -50,15 +50,16 @@ subject to {
 	//1 scene -> an actor only plays 1 char
 	//1 character can only be played by 1 actor
 	forall(s in Scenes, char1 in s.characters, char2 in s.characters: char1 != char2)
-		assign[<char1>] != assign[<char2>]; 
+		actorOfCharacter[<char1>] != actorOfCharacter[<char2>]; 
 	  
 
 //actor can play a character if they have the same type
 	forall(char in Characters)
-	  ActorTypes[assign[<char.name>]] == (ord(CharacterTypes, char.characterType));
+	  typeOfActor[actorOfCharacter[<char.name>]] == (ord(CharacterTypes, char.characterType));
 
 //1 leading character -> 1 actor
-
+	forall(lc in LeadingCharacters, c in Characters : lc != c.name)
+	  actorOfCharacter[<lc>] != actorOfCharacter[<c.name>];
 //1 actor cannot play 2 different characters in 2 consecutive scenes / can only play the same character in 2 consecutive scenes
 
 //1 actor cannot play more than MAX number of chars
@@ -82,11 +83,11 @@ execute {
 //CharactersPlayedByActor = "asdf";
 
 	for(var ch in Characters) {
-		CharactersPlayedByActor[assign[ch]-1].add(ch);	
+		CharactersPlayedByActor[actorOfCharacter[ch]-1].add(ch);	
 	}
 	
 	for(var i = 0; i < NrOfActorsNeeded; ++i) {	
-		nrOfActorsOfType[Opl.item(CharacterTypes, ActorTypes[i+1])]++;
+		nrOfActorsOfType[Opl.item(CharacterTypes, typeOfActor[i+1])]++;
 	}
 
 	
