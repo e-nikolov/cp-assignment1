@@ -35,8 +35,12 @@ assert forall (scene in Scenes, name in scene.characters) test:
 range actorRange = 1..card(Characters);
 dvar int typeOfActor[actorRange] in 0..nrOfCharacterTypes;
 dvar int actorOfCharacter[c in Characters] in actorRange;
+dvar int maxNrOfActorsNeeded;
 
-dexpr int NrOfActorsNeeded = max(c in Characters) actorOfCharacter[c];;
+//dexpr int NrOfActorsNeeded = max(c in Characters) actorOfCharacter[c];
+dexpr int NrOfActorsNeeded = maxNrOfActorsNeeded;
+//dexpr int NrOfActorsNeeded = sum(c in actorRange) typeOfActor[c];
+//maybe type of actor can have a 0 to be NON PLAYABLE?
  
 execute {
 	cp.param.Workers = 1;
@@ -44,8 +48,10 @@ execute {
 	cp.param.TimeLimit = 5; 
 } 
  
+//minimize
+//  NrOfActorsNeeded;
 minimize
-  NrOfActorsNeeded;
+  maxNrOfActorsNeeded;
 subject to {
 	//This assures that no actor plays two charachters in the same scene.
 	//1 scene -> an actor only plays 1 char
@@ -53,7 +59,10 @@ subject to {
 	forall(s in Scenes, char1 in s.characters, char2 in s.characters: char1 != char2)
 		actorOfCharacter[<char1>] != actorOfCharacter[<char2>]; 
 	  
-
+	//constraint based on the minimization requirement
+	forall(char in Characters)
+	    actorOfCharacter[<char.name>] <= maxNrOfActorsNeeded;
+	    
 //actor can play a character if they have the same type
 	forall(char in Characters)
 	  typeOfActor[actorOfCharacter[<char.name>]] == (ord(CharacterTypes, char.characterType));
