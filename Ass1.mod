@@ -29,18 +29,21 @@ int maxNrOfCharacters = ...;
 {Scene} Scenes = ...;
 int nrOfScenes = card(Scenes);
 
+//int minNrActors = 23;
+//int minNrActors = card(c in Characters: c.characterType == "Male")/maxNrOfCharacters +
+//				  card(c in Characters: c.characterType == "Female")/maxNrOfCharacters;
+// should be for all charTypes .. not hardcoded Male Female.. + should be rounded up.
+int minNrActors = (sum(chType in CharacterTypes) (card(Characters)+(maxNrOfCharacters-1)) div maxNrOfCharacters) div card(CharacterTypes);
+// todo .. actually get the number of <type> character for minNrActors..
+
 assert forall (scene in Scenes, name in scene.characters) test:
 	name in CharacterNames;
 	
 range actorRange = 1..card(Characters);
 dvar int typeOfActor[actorRange] in 0..nrOfCharacterTypes;
 dvar int actorOfCharacter[c in Characters] in actorRange;
-dvar int maxNrOfActorsNeeded;
 
-//dexpr int NrOfActorsNeeded = max(c in Characters) actorOfCharacter[c];
-dexpr int NrOfActorsNeeded = maxNrOfActorsNeeded;
-//dexpr int NrOfActorsNeeded = sum(c in actorRange) typeOfActor[c];
-//maybe type of actor can have a 0 to be NON PLAYABLE?
+dvar int NrOfActorsNeeded;
  
 execute {
 	cp.param.Workers = 1;
@@ -48,11 +51,13 @@ execute {
 	cp.param.TimeLimit = 5; 
 } 
  
-//minimize
-//  NrOfActorsNeeded;
 minimize
-  maxNrOfActorsNeeded;
+  NrOfActorsNeeded;
 subject to {
+
+	//removes unnecessary tests.
+	NrOfActorsNeeded >= minNrActors;
+
 	//This assures that no actor plays two charachters in the same scene.
 	//1 scene -> an actor only plays 1 char
 	//1 character can only be played by 1 actor
@@ -61,7 +66,7 @@ subject to {
 	  
 	//constraint based on the minimization requirement
 	forall(char in Characters)
-	    actorOfCharacter[<char.name>] <= maxNrOfActorsNeeded;
+	    actorOfCharacter[<char.name>] <= NrOfActorsNeeded;
 	    
 //actor can play a character if they have the same type
 	forall(char in Characters)
