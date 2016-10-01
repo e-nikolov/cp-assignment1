@@ -29,12 +29,8 @@ int maxNrOfCharacters = ...;
 {Scene} Scenes = ...;
 int nrOfScenes = card(Scenes);
 
-//int minNrActors = 23;
-//int minNrActors = card(c in Characters: c.characterType == "Male")/maxNrOfCharacters +
-//				  card(c in Characters: c.characterType == "Female")/maxNrOfCharacters;
-// should be for all charTypes .. not hardcoded Male Female.. + should be rounded up.
-int minNrActors = (sum(chType in CharacterTypes) (card(Characters)+(maxNrOfCharacters-1)) div maxNrOfCharacters) div card(CharacterTypes);
-// todo .. actually get the number of <type> character for minNrActors..
+int minNrActors;
+int minNrTypesActors[ct in CharacterTypes];
 
 assert forall (scene in Scenes, name in scene.characters) test:
 	name in CharacterNames;
@@ -44,11 +40,27 @@ dvar int typeOfActor[actorRange] in 0..nrOfCharacterTypes;
 dvar int actorOfCharacter[c in Characters] in actorRange;
 
 dvar int NrOfActorsNeeded;
- 
+
 execute {
 	cp.param.Workers = 1;
 	  
 	cp.param.TimeLimit = 5; 
+	
+	minNrActors = 0;
+	for(ct in CharacterTypes)
+	{
+		minNrTypesActors[ct] = 0;
+		for(c in Characters)
+		{
+			if(c.characterType == ct)
+				minNrTypesActors[ct]++;
+		}
+//		this is mimicing ceiling function.
+//div ne e validen tuk .. a kakvo e? 
+//btw tova shte dade rezultat 19 za 3TypesTwise a az vidqh zabyrzvane samo ako e 23 to4no.
+		minNrActors += (minNrTypesActors[ct] + maxNrOfCharacters - 1) div maxNrOfCharacters;
+//		minNrActors = 23; and this is what we want to end up with for 3TypesTwise
+	}
 } 
  
 minimize
