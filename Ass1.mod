@@ -47,19 +47,17 @@ execute {
 	cp.param.TimeLimit = 5; 
 	
 	minNrActors = 0;
-	for(ct in CharacterTypes)
+	for(var ct in CharacterTypes)
 	{
 		minNrTypesActors[ct] = 0;
-		for(c in Characters)
+		for(var c in Characters)
 		{
 			if(c.characterType == ct)
 				minNrTypesActors[ct]++;
 		}
-//		this is mimicing ceiling function.
-//div ne e validen tuk .. a kakvo e? 
-//btw tova shte dade rezultat 19 za 3TypesTwise a az vidqh zabyrzvane samo ako e 23 to4no.
-		minNrActors += (minNrTypesActors[ct] + maxNrOfCharacters - 1) div maxNrOfCharacters;
-//		minNrActors = 23; and this is what we want to end up with for 3TypesTwise
+//for 3TypesTwise this will give a min of 19.. and even 22 doesnt give any speedup.
+//only 23 gives a speed up, 23 is the solution too.
+		minNrActors += Opl.ceil(minNrTypesActors[ct] / maxNrOfCharacters);
 	}
 } 
  
