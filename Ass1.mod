@@ -29,7 +29,7 @@ int maxNrOfCharacters = ...;
 {Scene} Scenes = ...;
 int nrOfScenes = card(Scenes);
 
-int minNrActors;
+int minNrActors = card(LeadingCharacters);
 int minNrTypesActors[ct in CharacterTypes];
 
 assert forall (scene in Scenes, name in scene.characters) test:
@@ -46,13 +46,12 @@ execute {
 	  
 	cp.param.TimeLimit = 5; 
 	
-	minNrActors = 0;
 	for(var ct in CharacterTypes)
 	{
 		minNrTypesActors[ct] = 0;
 		for(var c in Characters)
 		{
-			if(c.characterType == ct)
+			if(c.characterType == ct && !LeadingCharacters.contains(c.name))
 				minNrTypesActors[ct]++;
 		}
 //for 3TypesTwise this will give a min of 19.. and even 22 doesnt give any speedup.
