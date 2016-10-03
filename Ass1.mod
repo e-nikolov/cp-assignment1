@@ -58,15 +58,28 @@ execute {
 //only 23 gives a speed up, 23 is the solution too.
 		minNrActors += Opl.ceil(minNrTypesActors[ct] / maxNrOfCharacters);
 	}
-} 
+}
  
 minimize
   NrOfActorsNeeded;
 subject to {
 
+
 	//removes unnecessary tests.
 	NrOfActorsNeeded >= minNrActors;
 
+	//1 actor cannot play more than MAX number of chars
+	forall(a in actorRange) count(actorOfCharacter, a) <= maxNrOfCharacters;
+
+	// Leading characters are played by the actors in the begining of the list.
+	forall(lc in LeadingCharacters)
+	  	actorOfCharacter[<lc>] == (ord(LeadingCharacters, lc))+1;
+	
+
+	//1 leading character -> 1 actor
+	forall(lc in LeadingCharacters, c in Characters : lc != c.name)
+		actorOfCharacter[<lc>] != actorOfCharacter[<c.name>];
+	
 	//This assures that no actor plays two charachters in the same scene.
 	//1 scene -> an actor only plays 1 char
 	//1 character can only be played by 1 actor
@@ -81,9 +94,7 @@ subject to {
 	forall(char in Characters)
 	  typeOfActor[actorOfCharacter[<char.name>]] == (ord(CharacterTypes, char.characterType));
 
-//1 leading character -> 1 actor
-	forall(lc in LeadingCharacters, c in Characters : lc != c.name)
-	  actorOfCharacter[<lc>] != actorOfCharacter[<c.name>];
+
 //1 actor cannot play 2 different characters in 2 consecutive scenes / can only play the same character in 2 consecutive scenes
 
 	// for each scene
@@ -95,8 +106,6 @@ subject to {
 //		allDifferent(all(s in s2-1..s2, ch in item(Scenes, s).characters) actorOfCharacter[<ch>]);
 		forall(ch2 in item(Scenes, s2).characters, ch1 in item(Scenes, s2 - 1).characters : ch1 != ch2)	
 			actorOfCharacter[<ch1>] != actorOfCharacter[<ch2>];
-//1 actor cannot play more than MAX number of chars
-	forall(a in actorRange) count(actorOfCharacter, a) <= maxNrOfCharacters;
 }
 
 execute {
