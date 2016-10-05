@@ -30,11 +30,12 @@ int maxNrOfCharacters = ...;
 int nrOfScenes = card(Scenes);
 
 int minNrActors = card(LeadingCharacters);
-int minNrTypesActors[ct in CharacterTypes];
+int nrCharactersPerType[ct in CharacterTypes];
 
 assert forall (scene in Scenes, name in scene.characters) test:
 	name in CharacterNames;
-	
+
+// making sure there are enough available actors for the play
 range actorRange = 1..card(Characters);
 dvar int typeOfActor[actorRange] in 0..nrOfCharacterTypes;
 dvar int actorOfCharacter[c in Characters] in actorRange;
@@ -46,25 +47,22 @@ execute {
 	  
 	cp.param.TimeLimit = 5; 
 	
+	// calculating the minimum number of actors needed.
 	for(var ct in CharacterTypes)
 	{
-		minNrTypesActors[ct] = 0;
+		nrCharactersPerType[ct] = 0;
 		for(var c in Characters)
 		{
 			if(c.characterType == ct && !LeadingCharacters.contains(c.name))
-				minNrTypesActors[ct]++;
+				nrCharactersPerType[ct]++;
 		}
-//for 3TypesTwise this will give a min of 19.. and even 22 doesnt give any speedup.
-//only 23 gives a speed up, 23 is the solution too.
-		minNrActors += Opl.ceil(minNrTypesActors[ct] / maxNrOfCharacters);
+		minNrActors += Opl.ceil(nrCharactersPerType[ct] / maxNrOfCharacters);
 	}
 }
  
 minimize
   NrOfActorsNeeded;
 subject to {
-
-
 	//removes unnecessary tests.
 	NrOfActorsNeeded >= minNrActors;
 
@@ -74,7 +72,6 @@ subject to {
 	// Leading characters are played by the actors in the begining of the list.
 	forall(lc in LeadingCharacters)
 	  	actorOfCharacter[<lc>] == (ord(LeadingCharacters, lc))+1;
-	
 
 	//1 leading character -> 1 actor
 	forall(lc in LeadingCharacters, c in Characters : lc != c.name)
@@ -90,41 +87,27 @@ subject to {
 	forall(char in Characters)
 	    actorOfCharacter[<char.name>] <= NrOfActorsNeeded;
 	    
-//actor can play a character if they have the same type
+//actor can only play a character if they have the same type
 	forall(char in Characters)
 	  typeOfActor[actorOfCharacter[<char.name>]] == (ord(CharacterTypes, char.characterType));
 
 
-//1 actor cannot play 2 different characters in 2 consecutive scenes / can only play the same character in 2 consecutive scenes
-
-	// for each scene
-	
-	// for each character in the scene * for each character in scene before that, if characters are different -> different actors
-	
+// 1 actor cannot play 2 different characters in 2 consecutive scenes 
+// can only play the same character in 2 consecutive scenes
+// for each scene, for each character in the scene * for each character in scene 
+// before that, if characters are different -> different actors	
 	forall (s2 in 1..nrOfScenes-1)
-//	  	allDifferent(all(s1 in Slots : s <= s1 <= s+blocksize-1) cartype[s1]);
-//		allDifferent(all(s in s2-1..s2, ch in item(Scenes, s).characters) actorOfCharacter[<ch>]);
 		forall(ch2 in item(Scenes, s2).characters, ch1 in item(Scenes, s2 - 1).characters : ch1 != ch2)	
 			actorOfCharacter[<ch1>] != actorOfCharacter[<ch2>];
 }
 
-execute {
-//	for(var name in CharacterNames)
-//   		writeln(name);
-}
-
-//{Character} CharactersPlayedByActor[i in 0..NrOfActorsNeeded-1] = 
-//	fill in from your decision variables.
-
+//	fill in from the decision variables.
 int nrOfActorsOfType[ct in CharacterTypes];
-//	fill in from your decision variables.
-//
 
+//	fill in from the decision variables.
 {Character} CharactersPlayedByActor[i in 0..NrOfActorsNeeded-1];
 
 execute {
-//CharactersPlayedByActor = "asdf";
-
 	for(var ch in Characters) {
 		CharactersPlayedByActor[actorOfCharacter[ch]-1].add(ch);	
 	}
@@ -132,8 +115,6 @@ execute {
 	for(var i = 0; i < NrOfActorsNeeded; ++i) {	
 		nrOfActorsOfType[Opl.item(CharacterTypes, typeOfActor[i+1])]++;
 	}
-
-	
 
   	writeln("Actors needed: ", NrOfActorsNeeded);
   	
