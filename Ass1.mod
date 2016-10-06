@@ -29,8 +29,16 @@ int maxNrOfCharacters = ...;
 {Scene} Scenes = ...;
 int nrOfScenes = card(Scenes);
 
-int minNrActors = card(LeadingCharacters);
-int nrCharactersPerType[ct in CharacterTypes];
+{Character} nonLeadingChars = {c | c in Characters : c.name not in LeadingCharacters}; 
+//float nrCharsPerType[type in CharacterTypes] = card({c | c in nonLeadingChars : (c.characterType == type)});
+//float minNrActors = card(LeadingCharacters) + sum(type in CharacterTypes) ceil(nrCharsPerType[type]/maxNrOfCharacters); 
+int nrCharsPerType[type in CharacterTypes] = card({c | c in nonLeadingChars : (c.characterType == type)});
+int minNrActors = card(LeadingCharacters) + sum(type in CharacterTypes) ((nrCharsPerType[type] + maxNrOfCharacters - 1) div maxNrOfCharacters);
+//   ^  this computes the optimal number needed for the play. A solution lower than this is impossible.
+
+//int minNrActors = card(LeadingCharacters) 
+//                  + sum(type in CharacterTypes) ((card({c | c in nonLeadingChars : 
+//                           (c.characterType == type)}) + maxNrOfCharacters - 1) div maxNrOfCharacters); 
 
 assert forall (scene in Scenes, name in scene.characters) test:
 	name in CharacterNames;
@@ -46,18 +54,6 @@ execute {
 	cp.param.Workers = 1;
 	  
 	cp.param.TimeLimit = 5; 
-	
-	// calculating the minimum number of actors needed.
-	for(var ct in CharacterTypes)
-	{
-		nrCharactersPerType[ct] = 0;
-		for(var c in Characters)
-		{
-			if(c.characterType == ct && !LeadingCharacters.contains(c.name))
-				nrCharactersPerType[ct]++;
-		}
-		minNrActors += Opl.ceil(nrCharactersPerType[ct] / maxNrOfCharacters);
-	}
 }
  
 minimize
