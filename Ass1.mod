@@ -43,6 +43,7 @@ int minNrActors = card(LeadingCharacters) + sum(type in CharacterTypes) ((nrChar
 assert forall (scene in Scenes, name in scene.characters) test:
 	name in CharacterNames;
 	
+	
 
 // making sure there are enough available actors for the play
 range actorRange = 1..card(Characters);
